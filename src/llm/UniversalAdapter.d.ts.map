@@ -1,1 +1,0 @@
-{"version":3,"file":"UniversalAdapter.d.ts","sourceRoot":"","sources":["UniversalAdapter.ts"],"names":[],"mappings":"AAGA,OAAO,EAAE,KAAK,WAAW,EAAE,MAAM,oBAAoB,CAAC;AACtD,OAAO,EAAE,KAAK,aAAa,EAAE,MAAM,IAAI,CAAC;AAExC,qBAAa,gBAAgB;WAEX,WAAW,CAAC,MAAM,EAAE,WAAW,GAAG,aAAa;IAoC7D;;OAEG;WACW,qBAAqB,CAAC,cAAc,EAAE,MAAM,EAAE,YAAY,EAAE,MAAM,GAAG,MAAM;CAgB5F"}
