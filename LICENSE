@@ -1,0 +1,36 @@
+# Astra - License
+
+## Personal Use Only
+
+Copyright (c) 2026 Astra Project
+
+This software is provided **free for personal and educational use only**.
+
+### You CAN:
+
+- Download and try the software
+- Use it for personal projects
+- Learn from the code
+- Modify it for personal use
+- Share it with friends (non-commercially)
+
+### You CANNOT:
+
+- Use it for commercial purposes
+- Sell it or include it in paid products
+- Use it in a business environment
+- Remove this license notice
+
+### No Warranty
+
+This software is provided "as is", without warranty of any kind.
+Use at your own risk.
+
+---
+
+**Want to use Astra commercially?** Contact the maintainers.
+
+---
+
+This project includes open-source dependencies (Express, TypeScript, etc.)
+which retain their original licenses. See package.json for details.

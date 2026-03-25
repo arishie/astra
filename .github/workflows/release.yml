@@ -1,0 +1,54 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Run tests
+        run: npm test
+
+      - name: Create tarball
+        run: |
+          mkdir -p release
+          tar -czvf release/astra-${{ github.ref_name }}.tar.gz \
+            dist/ \
+            package.json \
+            package-lock.json \
+            docker-compose.yml \
+            Dockerfile \
+            .env.example \
+            README.md \
+            LICENSE \
+            setup.sh
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: release/astra-${{ github.ref_name }}.tar.gz
+          generate_release_notes: true
+          draft: false
+          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') }}

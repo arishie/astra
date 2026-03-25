@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Astra - AI Agent Dashboard</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#11088;</text></svg>">
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --border: #475569;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 0;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .logo-icon {
+            font-size: 32px;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        /* Main Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: calc(100vh - 73px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            padding: 20px 0;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-section-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            padding: 0 20px;
+            margin-bottom: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            border-left: 3px solid var(--accent);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        /* Chat Interface */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 200px);
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .message {
+            margin-bottom: 16px;
+            max-width: 80%;
+        }
+
+        .message.user {
+            margin-left: auto;
+        }
+
+        .message-content {
+            padding: 12px 16px;
+            border-radius: 12px;
+            line-height: 1.5;
+        }
+
+        .message.user .message-content {
+            background: var(--accent);
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.assistant .message-content {
+            background: var(--bg-tertiary);
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-input-container {
+            padding: 16px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            font-size: 15px;
+            outline: none;
+        }
+
+        .chat-input:focus {
+            border-color: var(--accent);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 15px;
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 15px;
+            outline: none;
+        }
+
+        /* Status Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: rgba(34, 197, 94, 0.2);
+            color: var(--success);
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .badge-error {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--error);
+        }
+
+        /* Tables */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th, .table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table th {
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        /* Login Page */
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+        }
+
+        .login-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 48px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
+
+        .login-logo {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .login-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .login-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        .oauth-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .oauth-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+
+        .oauth-btn:hover {
+            background: var(--border);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Platform Icons */
+        .platform-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .platform-whatsapp { background: #25D366; }
+        .platform-telegram { background: #0088cc; }
+        .platform-discord { background: #5865F2; }
+        .platform-slack { background: #4A154B; }
+
+        /* Hidden */
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="login-page" class="login-page">
+        <div class="login-card fade-in">
+            <div class="login-logo">&#11088;</div>
+            <h1 class="login-title">Welcome to Astra</h1>
+            <p class="login-subtitle">Your privacy-first AI assistant</p>
+            <div class="oauth-buttons">
+                <button class="oauth-btn" onclick="login('google')">
+                    <svg width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                    Continue with Google
+                </button>
+                <button class="oauth-btn" onclick="login('github')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                    Continue with GitHub
+                </button>
+                <button class="oauth-btn" onclick="login('apple')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                    Continue with Apple
+                </button>
+            </div>
+            <p style="margin-top: 24px; color: var(--text-secondary); font-size: 13px;">
+                By continuing, you agree to our Terms of Service
+            </p>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="hidden">
+        <header>
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">&#11088;</span>
+                    <span>Astra</span>
+                </div>
+                <div class="user-menu">
+                    <span id="user-name">User</span>
+                    <div class="avatar" id="user-avatar">U</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-layout">
+            <nav class="sidebar">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main</div>
+                    <div class="nav-item active" onclick="showPage('dashboard')">
+                        <span class="nav-icon">&#128200;</span>
+                        <span>Dashboard</span>
+                    </div>
+                    <div class="nav-item" onclick="showPage('chat')">
+                        <span class="nav-icon">&#128172;</span>
+                        <span>Chat</span>
+                    </div>
+                    <div class="nav-item" onclick="showPage('memory')">
+                        <span class="nav-icon">&#129504;</span>
+                        <span>Memory</span>
+                    </div>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Connections</div>
+                    <div class="nav-item" onclick="showPage('platforms')">
+                        <span class="nav-icon">&#128279;</span>
+                        <span>Platforms</span>
+                    </div>
+                    <div class="nav-item" onclick="showPage('keys')">
+                        <span class="nav-icon">&#128273;</span>
+                        <span>API Keys</span>
+                    </div>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Account</div>
+                    <div class="nav-item" onclick="showPage('settings')">
+                        <span class="nav-icon">&#9881;</span>
+                        <span>Settings</span>
+                    </div>
+                    <div class="nav-item" onclick="logout()">
+                        <span class="nav-icon">&#128682;</span>
+                        <span>Logout</span>
+                    </div>
+                </div>
+            </nav>
+
+            <main class="main-content">
+                <!-- Dashboard Page -->
+                <div id="page-dashboard" class="page fade-in">
+                    <h1 class="page-title">Dashboard</h1>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-messages">0</div>
+                            <div class="stat-label">Messages Today</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-tokens">0</div>
+                            <div class="stat-label">Tokens Used</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-documents">0</div>
+                            <div class="stat-label">Documents</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="stat-platforms">0</div>
+                            <div class="stat-label">Connected Platforms</div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h2 class="card-title">Quick Actions</h2>
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <button class="btn btn-primary" onclick="showPage('chat')">Start Chat</button>
+                            <button class="btn btn-secondary" onclick="showPage('memory')">Upload Document</button>
+                            <button class="btn btn-secondary" onclick="showPage('platforms')">Connect Platform</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h2 class="card-title">System Status</h2>
+                        <div id="system-status">
+                            <div class="loading"><div class="spinner"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Page -->
+                <div id="page-chat" class="page hidden">
+                    <h1 class="page-title">Chat</h1>
+                    <div class="chat-container">
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="message assistant">
+                                <div class="message-content">Hello! I'm Astra, your AI assistant. How can I help you today?</div>
+                            </div>
+                        </div>
+                        <div class="chat-input-container">
+                            <input type="text" class="chat-input" id="chat-input" placeholder="Type a message..." onkeypress="handleChatKeypress(event)">
+                            <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Memory Page -->
+                <div id="page-memory" class="page hidden">
+                    <h1 class="page-title">Memory</h1>
+                    <div class="card">
+                        <h2 class="card-title">Upload Document</h2>
+                        <div class="form-group">
+                            <label class="form-label">Choose a file (PDF, TXT, MD)</label>
+                            <input type="file" class="form-input" id="file-upload" accept=".pdf,.txt,.md">
+                        </div>
+                        <button class="btn btn-primary" onclick="uploadDocument()">Upload</button>
+                    </div>
+                    <div class="card">
+                        <h2 class="card-title">Search Memory</h2>
+                        <div class="form-group" style="display: flex; gap: 12px;">
+                            <input type="text" class="form-input" id="memory-search" placeholder="Search your knowledge base...">
+                            <button class="btn btn-primary" onclick="searchMemory()">Search</button>
+                        </div>
+                        <div id="memory-results"></div>
+                    </div>
+                </div>
+
+                <!-- Platforms Page -->
+                <div id="page-platforms" class="page hidden">
+                    <h1 class="page-title">Connected Platforms</h1>
+                    <div class="stats-grid">
+                        <div class="card" style="cursor: pointer;" onclick="connectPlatform('whatsapp')">
+                            <div style="display: flex; align-items: center; gap: 16px;">
+                                <div class="platform-icon platform-whatsapp">&#128172;</div>
+                                <div>
+                                    <div style="font-weight: 600;">WhatsApp</div>
+                                    <div class="badge badge-warning" id="whatsapp-status">Not Connected</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card" style="cursor: pointer;" onclick="connectPlatform('telegram')">
+                            <div style="display: flex; align-items: center; gap: 16px;">
+                                <div class="platform-icon platform-telegram">&#9992;</div>
+                                <div>
+                                    <div style="font-weight: 600;">Telegram</div>
+                                    <div class="badge badge-warning" id="telegram-status">Not Connected</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card" style="cursor: pointer;" onclick="connectPlatform('discord')">
+                            <div style="display: flex; align-items: center; gap: 16px;">
+                                <div class="platform-icon platform-discord">&#127918;</div>
+                                <div>
+                                    <div style="font-weight: 600;">Discord</div>
+                                    <div class="badge badge-warning" id="discord-status">Not Connected</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card" style="cursor: pointer;" onclick="connectPlatform('slack')">
+                            <div style="display: flex; align-items: center; gap: 16px;">
+                                <div class="platform-icon platform-slack">&#128187;</div>
+                                <div>
+                                    <div style="font-weight: 600;">Slack</div>
+                                    <div class="badge badge-warning" id="slack-status">Not Connected</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Keys Page -->
+                <div id="page-keys" class="page hidden">
+                    <h1 class="page-title">API Keys</h1>
+                    <div class="card">
+                        <h2 class="card-title">Add New API Key</h2>
+                        <div class="form-group">
+                            <label class="form-label">Provider</label>
+                            <select class="form-select" id="key-provider">
+                                <option value="openai">OpenAI</option>
+                                <option value="anthropic">Anthropic</option>
+                                <option value="google">Google AI</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">API Key</label>
+                            <input type="password" class="form-input" id="key-value" placeholder="sk-...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Name (optional)</label>
+                            <input type="text" class="form-input" id="key-name" placeholder="My OpenAI Key">
+                        </div>
+                        <button class="btn btn-primary" onclick="addApiKey()">Add Key</button>
+                    </div>
+                    <div class="card">
+                        <h2 class="card-title">Your API Keys</h2>
+                        <table class="table" id="keys-table">
+                            <thead>
+                                <tr>
+                                    <th>Provider</th>
+                                    <th>Name</th>
+                                    <th>Key</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="keys-list">
+                                <tr><td colspan="5" style="text-align: center; color: var(--text-secondary);">No API keys added yet</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Settings Page -->
+                <div id="page-settings" class="page hidden">
+                    <h1 class="page-title">Settings</h1>
+                    <div class="card">
+                        <h2 class="card-title">Profile</h2>
+                        <div class="form-group">
+                            <label class="form-label">Display Name</label>
+                            <input type="text" class="form-input" id="settings-name">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-input" id="settings-email" disabled>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveSettings()">Save Changes</button>
+                    </div>
+                    <div class="card">
+                        <h2 class="card-title">Preferences</h2>
+                        <div class="form-group">
+                            <label class="form-label">Default Model</label>
+                            <select class="form-select" id="settings-model">
+                                <option value="gpt-4">GPT-4</option>
+                                <option value="claude-3-opus">Claude 3 Opus</option>
+                                <option value="gemini-pro">Gemini Pro</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Theme</label>
+                            <select class="form-select" id="settings-theme">
+                                <option value="dark">Dark</option>
+                                <option value="light">Light</option>
+                                <option value="auto">Auto</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card" style="border-color: var(--error);">
+                        <h2 class="card-title" style="color: var(--error);">Danger Zone</h2>
+                        <p style="margin-bottom: 16px; color: var(--text-secondary);">
+                            Once you delete your account, there is no going back.
+                        </p>
+                        <button class="btn" style="background: var(--error); color: white;" onclick="deleteAccount()">Delete Account</button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let token = localStorage.getItem('astra_token');
+        let user = null;
+
+        // API Base URL
+        const API_BASE = '/api/v1';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            if (token) {
+                checkAuth();
+            }
+        });
+
+        // Auth Functions
+        async function login(provider) {
+            try {
+                const res = await fetch(`${API_BASE}/auth/oauth/${provider}`);
+                const data = await res.json();
+                if (data.url) {
+                    window.location.href = data.url;
+                }
+            } catch (err) {
+                console.error('Login error:', err);
+                alert('Failed to initiate login. Please try again.');
+            }
+        }
+
+        async function checkAuth() {
+            try {
+                const res = await fetch(`${API_BASE}/auth/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    user = await res.json();
+                    showDashboard();
+                } else {
+                    logout();
+                }
+            } catch (err) {
+                console.error('Auth check failed:', err);
+                logout();
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('astra_token');
+            token = null;
+            user = null;
+            document.getElementById('login-page').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+        }
+
+        function showDashboard() {
+            document.getElementById('login-page').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+
+            if (user) {
+                document.getElementById('user-name').textContent = user.name || 'User';
+                document.getElementById('user-avatar').textContent = (user.name || 'U')[0].toUpperCase();
+            }
+
+            loadDashboardData();
+        }
+
+        // Navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+            document.getElementById(`page-${pageId}`).classList.remove('hidden');
+            event.target.closest('.nav-item')?.classList.add('active');
+        }
+
+        // Dashboard
+        async function loadDashboardData() {
+            try {
+                // Load usage stats
+                const usageRes = await fetch(`${API_BASE}/user/usage`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (usageRes.ok) {
+                    const usage = await usageRes.json();
+                    document.getElementById('stat-messages').textContent = usage.totalMessages || 0;
+                    document.getElementById('stat-tokens').textContent = (usage.tokensUsed || 0).toLocaleString();
+                    document.getElementById('stat-documents').textContent = usage.documentsIngested || 0;
+                }
+
+                // Load platforms
+                const platformsRes = await fetch(`${API_BASE}/platforms`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (platformsRes.ok) {
+                    const platforms = await platformsRes.json();
+                    document.getElementById('stat-platforms').textContent = platforms.length || 0;
+                }
+
+                // Load system status
+                const healthRes = await fetch('/health');
+                if (healthRes.ok) {
+                    const health = await healthRes.json();
+                    document.getElementById('system-status').innerHTML = `
+                        <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+                            <div>
+                                <span class="badge ${health.status === 'healthy' ? 'badge-success' : 'badge-warning'}">${health.status}</span>
+                                <span style="margin-left: 8px; color: var(--text-secondary);">System</span>
+                            </div>
+                            <div>
+                                <span class="badge badge-success">Online</span>
+                                <span style="margin-left: 8px; color: var(--text-secondary);">API</span>
+                            </div>
+                            <div style="color: var(--text-secondary);">
+                                Version: ${health.version || '1.0.0'}
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                console.error('Failed to load dashboard data:', err);
+            }
+        }
+
+        // Chat
+        function handleChatKeypress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const messagesDiv = document.getElementById('chat-messages');
+
+            // Add user message
+            messagesDiv.innerHTML += `
+                <div class="message user fade-in">
+                    <div class="message-content">${escapeHtml(message)}</div>
+                </div>
+            `;
+
+            input.value = '';
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            try {
+                const res = await fetch(`${API_BASE}/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ message })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    messagesDiv.innerHTML += `
+                        <div class="message assistant fade-in">
+                            <div class="message-content">${escapeHtml(data.response)}</div>
+                        </div>
+                    `;
+                } else {
+                    messagesDiv.innerHTML += `
+                        <div class="message assistant fade-in">
+                            <div class="message-content" style="color: var(--error);">Sorry, I encountered an error. Please try again.</div>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                console.error('Chat error:', err);
+                messagesDiv.innerHTML += `
+                    <div class="message assistant fade-in">
+                        <div class="message-content" style="color: var(--error);">Connection error. Please check your connection and try again.</div>
+                    </div>
+                `;
+            }
+
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // API Keys
+        async function addApiKey() {
+            const provider = document.getElementById('key-provider').value;
+            const key = document.getElementById('key-value').value;
+            const name = document.getElementById('key-name').value || `${provider} key`;
+
+            if (!key) {
+                alert('Please enter an API key');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/keys`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ provider, key, name })
+                });
+
+                if (res.ok) {
+                    alert('API key added successfully!');
+                    document.getElementById('key-value').value = '';
+                    document.getElementById('key-name').value = '';
+                    loadApiKeys();
+                } else {
+                    const error = await res.json();
+                    alert(`Failed to add key: ${error.message}`);
+                }
+            } catch (err) {
+                console.error('Error adding key:', err);
+                alert('Failed to add API key');
+            }
+        }
+
+        async function loadApiKeys() {
+            try {
+                const res = await fetch(`${API_BASE}/keys`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const keys = await res.json();
+                    const tbody = document.getElementById('keys-list');
+                    if (keys.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-secondary);">No API keys added yet</td></tr>';
+                    } else {
+                        tbody.innerHTML = keys.map(k => `
+                            <tr>
+                                <td>${k.provider}</td>
+                                <td>${k.name}</td>
+                                <td>${k.maskedKey}</td>
+                                <td><span class="badge ${k.is_validated ? 'badge-success' : 'badge-warning'}">${k.is_validated ? 'Valid' : 'Unverified'}</span></td>
+                                <td><button class="btn btn-secondary" style="padding: 6px 12px; font-size: 13px;" onclick="deleteKey('${k.id}')">Delete</button></td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+            } catch (err) {
+                console.error('Error loading keys:', err);
+            }
+        }
+
+        async function deleteKey(keyId) {
+            if (!confirm('Are you sure you want to delete this API key?')) return;
+
+            try {
+                const res = await fetch(`${API_BASE}/keys/${keyId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    loadApiKeys();
+                }
+            } catch (err) {
+                console.error('Error deleting key:', err);
+            }
+        }
+
+        // Memory
+        async function uploadDocument() {
+            const fileInput = document.getElementById('file-upload');
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('Please select a file');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const res = await fetch(`${API_BASE}/memory/ingest`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+
+                if (res.ok) {
+                    alert('Document uploaded successfully!');
+                    fileInput.value = '';
+                } else {
+                    alert('Failed to upload document');
+                }
+            } catch (err) {
+                console.error('Upload error:', err);
+                alert('Failed to upload document');
+            }
+        }
+
+        async function searchMemory() {
+            const query = document.getElementById('memory-search').value;
+            if (!query) return;
+
+            try {
+                const res = await fetch(`${API_BASE}/memory/search?q=${encodeURIComponent(query)}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    const results = await res.json();
+                    const resultsDiv = document.getElementById('memory-results');
+                    if (results.length === 0) {
+                        resultsDiv.innerHTML = '<p style="color: var(--text-secondary); margin-top: 16px;">No results found</p>';
+                    } else {
+                        resultsDiv.innerHTML = results.map(r => `
+                            <div class="card" style="margin-top: 16px;">
+                                <p>${escapeHtml(r.text.substring(0, 300))}...</p>
+                                <p style="color: var(--text-secondary); font-size: 13px; margin-top: 8px;">
+                                    Score: ${(r.score * 100).toFixed(1)}%
+                                </p>
+                            </div>
+                        `).join('');
+                    }
+                }
+            } catch (err) {
+                console.error('Search error:', err);
+            }
+        }
+
+        // Platforms
+        async function connectPlatform(platform) {
+            alert(`Connecting ${platform}... This would open a connection dialog.`);
+            // Implementation would vary by platform
+        }
+
+        // Settings
+        async function saveSettings() {
+            const name = document.getElementById('settings-name').value;
+            try {
+                const res = await fetch(`${API_BASE}/user/profile`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ name })
+                });
+
+                if (res.ok) {
+                    alert('Settings saved!');
+                }
+            } catch (err) {
+                console.error('Settings error:', err);
+            }
+        }
+
+        async function deleteAccount() {
+            if (!confirm('Are you absolutely sure? This action cannot be undone.')) return;
+            if (!confirm('Really? All your data will be permanently deleted.')) return;
+
+            // Implementation would call DELETE /user/account
+            alert('Account deletion would be processed here.');
+        }
+
+        // Utilities
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Handle OAuth callback
+        const urlParams = new URLSearchParams(window.location.search);
+        const callbackToken = urlParams.get('token');
+        if (callbackToken) {
+            localStorage.setItem('astra_token', callbackToken);
+            token = callbackToken;
+            window.history.replaceState({}, document.title, window.location.pathname);
+            checkAuth();
+        }
+    </script>
+</body>
+</html>

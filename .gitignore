@@ -1,0 +1,74 @@
+# Dependencies
+node_modules/
+engine/venv/
+
+# Build output
+dist/
+
+# Environment variables (never commit secrets!)
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Astra data directories (local development)
+workspaces/
+astra_memory/
+knowledge_base/
+screenshots/
+
+# Baileys session data (WhatsApp)
+baileys_auth_info/
+
+# ChromaDB data
+chroma_data/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Docker
+.docker/
