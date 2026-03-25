@@ -8,15 +8,14 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-# Install build dependencies (including X11 for robotjs)
-RUN apk add --no-cache python3 make g++ git \
-    libx11-dev libxtst-dev libpng-dev
+# Install build dependencies
+RUN apk add --no-cache python3 make g++ git
 
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --legacy-peer-deps
+# Install dependencies (skip native modules like robotjs - not needed in containers)
+RUN npm ci --legacy-peer-deps --ignore-scripts
 
 # Copy source code
 COPY tsconfig.json ./
